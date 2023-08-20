@@ -26,12 +26,15 @@ const userSchema = new mongoose.Schema({
     coverPic: {
         type: String, default: ""
     },
-    followers: {
-        type: Array, default: [],
-    },
-    followings: {
-        type: Array, default: [],
-    },
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users", // Referring to the same User model
+    }],
+    
+    followings: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users", // Referring to the same User model
+    }],
     saved_posts: {
         type: Array, default: [],
     },
