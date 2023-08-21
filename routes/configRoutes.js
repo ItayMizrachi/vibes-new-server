@@ -6,8 +6,8 @@ const groupsR = require("./groups");
 const openaiR = require("./openai");
 const uploadR = require("./upload");
 const notificationsR = require("./notifications");
-const chatsR = require("./chats"); // Add this line for chat routes
-const messageR = require("./message"); // Add this line for message routes
+const chatsR = require("./chats"); 
+const messageR = require("./message"); 
 
 exports.routesInit = (app) => {
   app.use("/", indexR);

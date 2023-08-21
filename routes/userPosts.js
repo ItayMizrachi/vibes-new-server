@@ -4,7 +4,6 @@ const router = express.Router();
 const { auth, authAdmin } = require("../auth/auth");
 const { UserModel } = require("../models/userModel");
 const mongoose = require('mongoose');
-const Notifications = require("../models/notificationsModel");
 
 // get all the post of the users you following 
 // Domain/userPosts
@@ -32,7 +31,7 @@ router.get("/", async (req, res) => {
 })
 
 router.get("/allposts", async (req, res) => {
-    let perPage = 2;
+    let perPage = 10;
     let page = parseInt(req.query.page) || 1;  // Adjusted this line
     let sort = req.query.sort || "date_created";
     let reverse = (req.query.reverse == "yes") ? 1 : -1;

@@ -1,26 +1,29 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../auth/auth"); // Your authentication middleware
+const {auth} = require("../auth/auth.js"); // Your authentication middleware
 const { Chat, validateChat } = require("../models/chatModel");
 const { Message, validateMessage } = require("../models/messageModel");
 
-
-// Get all chats for a user
-router.get("/", auth, async (req, res) => {
+// Get chats for a specific user
+router.get("/:userId",auth, async (req, res) => {
   try {
-      const userChats = await Chat.find({ participants: req.user._id })
-      .populate("participants", "user_name profilePic") // Optional: Populate participants
+    const userId = req.params.userId;
+
+    // Query the database for chats with the user as a participant
+    const userChats = await Chat.find({ participants: userId })
+      .populate("participants", "user_name profilePic")
       .exec();
-      
-      res.json(userChats);
-    } catch (err) {
+
+    res.status(200).json(userChats);
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
-}
+  }
 });
 
+
 // Get messages for a specific chat
-router.get("/:chatId/messages", auth, async (req, res) => {
+router.get("/:chatId/messages",auth,  async (req, res) => {
     try {
         const chatId = req.params.chatId;
         
@@ -36,39 +39,20 @@ router.get("/:chatId/messages", auth, async (req, res) => {
 });
 
 // Create a new chat
-router.post("/", auth, async (req, res) => {
+router.post("/",auth,  async (req, res) => {
   try {
-    const { error } = validateChat(req.body);
-    if (error) return res.status(400).json({ error: error.details[0].message });
+    const participants = req.body.participants; // Array of participant IDs
 
-    const chat = new Chat({
-      participants: req.body.participants,
+    // Validate participants or any other required data
+
+    const newChat = new Chat({
+      participants: participants,
     });
 
-    await chat.save();
-    res.status(201).json(chat);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+    // Save the new chat in the database
+    await newChat.save();
 
-// Send a new message to a chat
-router.post("/:chatId/messages", auth, async (req, res) => {
-  try {
-    const chatId = req.params.chatId;
-
-    const { error } = validateMessage(req.body);
-    if (error) return res.status(400).json({ error: error.details[0].message });
-
-    const message = new Message({
-      chat: chatId,
-      sender: req.user._id,
-      content: req.body.content,
-    });
-
-    await message.save();
-    res.status(201).json(message);
+    res.status(201).json(newChat);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
