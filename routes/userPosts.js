@@ -4,7 +4,6 @@ const router = express.Router();
 const { auth, authAdmin } = require("../auth/auth");
 const { UserModel } = require("../models/userModel");
 const mongoose = require('mongoose');
-const Notifications = require("../models/notificationsModel");
 
 // get all the post of the users you following 
 // Domain/userPosts
