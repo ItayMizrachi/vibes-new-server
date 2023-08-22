@@ -12,7 +12,7 @@ cloudinary.config({
     api_secret: process.env.CLOUD_SECRET
 });
 
-router.post("/cloud", auth, async (req, res) => {
+router.post("/cloud", async (req, res) => {
     try {
         const dataUpload = await cloudinary.uploader.upload(req.body.image, { unique_filename: true })
         res.json({ data: dataUpload });

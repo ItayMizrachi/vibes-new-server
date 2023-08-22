@@ -65,33 +65,69 @@ router.get("/userInfo", auth, async (req, res) => {
   }
 })
 
-// router.get("/random5", auth, async (req, res) => {
-//   try {
-//     let id = req.tokenData._id;
-//     let data = await UserModel.aggregate([
-//       { $match: { _id: { $nin: [id, ...req.tokenData.followings] } } }, // Exclude current user and followings
-//       { $sample: { size: 5 } }
-//     ]);
+router.get("/random4", auth, async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.tokenData._id);
+    const data = await UserModel.aggregate([
+      { $match: { _id: { $ne: user._id } } },
+      { $sample: { size: 5 } },
+    ])
+    res.json(data);
 
-//     res.json(data);
-//   } catch (err) {
-//     console.log(err);
-//     res.status(502).json({ err });
-//   }
-// });
-//hi
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
 
 router.get("/random5", auth, async (req, res) => {
   try {
-    const userId = req.tokenData._id;
-    const followingIds = req.tokenData.followings.map(id => id.toString());
+    const user = await UserModel.findById(req.tokenData._id)
 
+    const userId = new ObjectId(req.tokenData._id);
+    const followingIds = user.followings;
     const data = await UserModel.aggregate([
+      { $match: { _id: { $in: followingIds } } },
+      { $sample: { size: 5 } },
+      {
+        $addFields: {
+          followingsAsObjectIds: {
+            $map: {
+              input: "$followings",
+              in: { $toObjectId: "$$this" }
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "followingsAsObjectIds",
+          foreignField: "_id",
+          as: "followings"
+        }
+
+      },
+      // Project the required fields
+      {
+        $project: {
+          _id: 1,
+          user_name: 1,
+          profilePic: 1,
+          followings: 1
+        }
+      },
+      { $unwind: "$followings" },
+      {
+        $replaceRoot: { newRoot: "$followings" }
+      },
+      // Match to exclude already followed users
       { $match: { _id: { $nin: [userId, ...followingIds] } } },
+      // // Sample from the remaining followings
       { $sample: { size: 5 } }
     ]);
-
     res.json(data);
+
   } catch (err) {
     console.log(err);
     res.status(502).json({ err });

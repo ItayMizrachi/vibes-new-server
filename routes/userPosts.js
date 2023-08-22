@@ -137,6 +137,18 @@ router.get("/single/:id", async (req, res) => {
     }
 })
 
+//working on saved posts api
+router.get("/savedPosts", auth, async (req, res) => {
+    try {
+        const postArray = await UserPostModel.find({ user: req.tokenData._id });
+        res.json(postArray);
+
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ err });
+    }
+});
+
 
 // // get a single post by its id
 // // Domain/userPosts/single/(id of the post)
