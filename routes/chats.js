@@ -1,17 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const {auth} = require("../auth/auth.js"); // Your authentication middleware
+const { auth } = require("../auth/auth.js"); // Your authentication middleware
 const { Chat, validateChat } = require("../models/chatModel");
 const { Message, validateMessage } = require("../models/messageModel");
 
 // Get chats for a specific user
-router.get("/:userId",auth, async (req, res) => {
+router.get("/:userId", auth, async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    // Query the database for chats with the user as a participant
+    // Query the database for chats with the user as a participant and sort by last_updated
     const userChats = await Chat.find({ participants: userId })
       .populate("participants", "user_name profilePic")
+      .sort({ last_updated: -1 }) // Sort in descending order (latest first)
       .exec();
 
     res.status(200).json(userChats);
@@ -23,27 +24,57 @@ router.get("/:userId",auth, async (req, res) => {
 
 
 // Get messages for a specific chat
-router.get("/:chatId/messages",auth,  async (req, res) => {
-    try {
-        const chatId = req.params.chatId;
-        
-        const messages = await Message.find({ chat: chatId })
-        .populate("sender", "user_name profilePic") // Optional: Populate sender
-        .exec();
-        
-        res.json(messages);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Internal server error" });
-    }
+router.get("/:chatId/messages", auth, async (req, res) => {
+  try {
+    const chatId = req.params.chatId;
+    const messages = await Message.find({ chat: chatId })
+      .populate("sender", "user_name profilePic") // Optional: Populate sender
+      .exec();
+
+    res.json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-// Create a new chat
-router.post("/",auth,  async (req, res) => {
+// Get messages for a specific chat
+// router.get("/:chatId/messages", auth, async (req, res) => {
+//   try {
+//       const chatId = req.params.chatId;
+
+//       // Update all messages in the chat to set isRead to true
+//       await Message.updateMany({ chat: chatId }, { $set: { isRead: true } });
+
+//       // Retrieve the updated messages
+//       const messages = await Message.find({ chat: chatId })
+//           .populate("sender", "user_name profilePic")
+//           .exec();
+
+//       res.json(messages);
+//   } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
+//creates a new chat
+router.post("/", auth, async (req, res) => {
   try {
     const participants = req.body.participants; // Array of participant IDs
 
-    // Validate participants or any other required data
+    // Check if a chat with the same participants already exists
+    const existingChat = await Chat.findOne({
+      participants: { $all: participants },
+    });
+
+    if (existingChat) {
+      return res.status(400).json({
+        error: "Chat with these participants already exists",
+        existingChat: existingChat,
+      });
+    }
 
     const newChat = new Chat({
       participants: participants,
@@ -58,5 +89,24 @@ router.post("/",auth,  async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// Update isRead status for all messages in a chat
+// router.put("/:chatId/mark-read", auth, async (req, res) => {
+//   try {
+//     const chatId = req.params.chatId;
+
+//     // Update isRead status for all messages in the chat
+//     await Message.updateMany({ chat: chatId }, { $set: { isRead: true } });
+
+//     // Update isRead status for the chat itself
+//     await Chat.findByIdAndUpdate(chatId, { $set: { isRead: true } });
+
+//     res.status(200).json({ message: "Chat marked as read" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 
 module.exports = router;

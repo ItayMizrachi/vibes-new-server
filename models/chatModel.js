@@ -16,6 +16,14 @@ const chatSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  last_updated: {
+    type: Date,
+    default: Date.now, // Set to the current date and time when the chat is created
+  },
+  unreadCount: {
+    type: Number,
+    default: 0, // Set to 0 by default
+  },
 });
 
 const Chat = mongoose.model("Chat", chatSchema);
