@@ -31,7 +31,7 @@ router.get("/", async (req, res) => {
 })
 
 router.get("/allposts", async (req, res) => {
-    let perPage = 10;
+    let perPage = 5;
     let page = parseInt(req.query.page) || 1;  // Adjusted this line
     let sort = req.query.sort || "date_created";
     let reverse = (req.query.reverse == "yes") ? 1 : -1;
