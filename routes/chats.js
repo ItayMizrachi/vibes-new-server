@@ -4,14 +4,17 @@ const { auth } = require("../auth/auth.js"); // Your authentication middleware
 const { Chat, validateChat } = require("../models/chatModel");
 const { Message, validateMessage } = require("../models/messageModel");
 
+const ITEMS_PER_PAGE = 20;
 // Get chats for a specific user
 router.get("/:userId", auth, async (req, res) => {
   try {
     const userId = req.params.userId;
-
+    const page = parseInt(req.query.page) || 1;
     // Query the database for chats with the user as a participant and sort by last_updated
     const userChats = await Chat.find({ participants: userId })
-      .populate("participants", "user_name profilePic")
+    .skip((page - 1) * ITEMS_PER_PAGE)
+    .limit(ITEMS_PER_PAGE)  
+    .populate("participants", "user_name profilePic")
       .sort({ last_updated: -1 }) // Sort in descending order (latest first)
       .exec();
 
@@ -21,6 +24,23 @@ router.get("/:userId", auth, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// router.get("/:userId", auth, async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+
+//     // Query the database for chats with the user as a participant and sort by last_updated
+//     const userChats = await Chat.find({ participants: userId })
+//       .populate("participants", "user_name profilePic")
+//       .sort({ last_updated: -1 }) // Sort in descending order (latest first)
+//       .exec();
+
+//     res.status(200).json(userChats);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 // Get messages for a specific chat

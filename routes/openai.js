@@ -7,7 +7,7 @@ router.post("/completions", async (req, res) => {
     const options = {
         method: "POST",
         headers: {
-            "Authorization": `Bearer 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`,
+            "Authorization": `Bearer ${process.env.OPENAI_KEY}`,
             "Content-Type": "application/json"
         },
         body: JSON.stringify({

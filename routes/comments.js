@@ -7,7 +7,7 @@ const { auth } = require("../auth/auth");
 // get all the comments in a post
 // Domain/comments/(id of the post)
 router.get("/:post_id", async (req, res) => {
-    let perPage = 10;
+    let perPage = 5;
     let page = req.query.page - 1 || 0;
   
     try {
