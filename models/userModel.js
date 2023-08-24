@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "users", // Referring to the same User model
     }],
-    
+
     followings: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "users", // Referring to the same User model
