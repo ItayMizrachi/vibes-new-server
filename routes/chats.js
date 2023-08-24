@@ -48,7 +48,7 @@ router.get("/:chatId/messages", auth, async (req, res) => {
   try {
     const chatId = req.params.chatId;
     const messages = await Message.find({ chat: chatId })
-      .populate("sender", "user_name profilePic") // Optional: Populate sender
+      .populate("sender", "user_name profilePic") 
       .exec();
 
     res.json(messages);
