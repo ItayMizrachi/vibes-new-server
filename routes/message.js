@@ -4,6 +4,7 @@ const { auth } = require("../auth/auth");  // Your authentication middleware
 const { Message, validateMessage } = require("../models/messageModel");
 const { UserModel } = require("../models/userModel");
 const { Chat } = require("../models/chatModel");
+const { emitMessageToRoom } = require("../sockets/appSocket");
 
 
 // Get all messages for a specific chat
@@ -42,6 +43,7 @@ router.post("/", async (req, res) => {
 
     await chat.save();
     await message.save();
+    // emitMessageToRoom(req.body.chat, message); //socket io 
     res.status(201).json(message);
   } catch (err) {
     console.error(err);
