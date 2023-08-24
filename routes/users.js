@@ -5,7 +5,8 @@ const { UserModel, validateUser, validateLogin, createToken, validateUpdate, val
 const { auth, authAdmin } = require("../auth/auth.js");
 const { UserPostModel } = require("../models/userPostModel");
 const router = express.Router();
-
+const mongoose = require('mongoose');
+const {ObjectId} = mongoose.Types;
 router.get("/", async (req, res) => {
   res.json({ msg: "Users work" });
 })
