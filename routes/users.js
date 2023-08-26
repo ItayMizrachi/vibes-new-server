@@ -446,25 +446,6 @@ router.put("/follow/:id", auth, async (req, res) => {
 //************************************************************* */
 
 
-router.put("/savePost/:id", auth, async (req, res) => {
-  try {
-    let id = req.params.id;
-    const user = await UserModel.findById(req.tokenData._id);
-
-    if (!user.saved_posts.includes(id)) {
-      await user.updateOne({ $push: { saved_posts: id } });
-      res.json("post has been saved ")
-
-    } else {
-      await user.updateOne({ $pull: { saved_posts: id } });
-      res.status(403).json("post has been unsaved ");
-    }
-  }
-  catch (err) {
-    console.log(err);
-    res.status(502).json({ err })
-  }
-})
 
 
 //change user role
