@@ -61,7 +61,7 @@ router.get("/postsList", authAdmin, async (req, res) => {
             .sort({ [sort]: reverse })
             .populate({ path: "user", select: ["user_name", "name"] })
             .exec();
-            ;
+        ;
 
         res.json(allPosts);
     } catch (err) {
@@ -98,6 +98,68 @@ router.get("/userInfo/:user_name", async (req, res) => {
         res.status(502).json({ err });
     }
 });
+
+//get posts from the saved_posts array
+router.get("/savedposts/:user_name", async (req, res) => {
+    const perPage = 10;
+    const page = req.query.page - 1 || 0;
+    const sort = req.query.sort || "date_created";
+    const reverse = req.query.reverse === 1;
+
+    try {
+        // Find the user based on the provided user_name
+        const user = await UserModel.findOne({ user_name: req.params.user_name });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Fetch all posts for the found user
+        const allPosts = await UserPostModel.find({ _id: user.saved_posts })
+            .limit(perPage)
+            .skip(page * perPage)
+            .sort({ [sort]: reverse })
+            .populate({ path: "user" })
+            .exec();
+
+        res.json(allPosts);
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ err });
+    }
+});
+
+
+//get posts from the liked_posts array
+router.get("/likedposts/:user_name", async (req, res) => {
+    const perPage = 10;
+    const page = req.query.page - 1 || 0;
+    const sort = req.query.sort || "date_created";
+    const reverse = req.query.reverse === 1;
+
+    try {
+        // Find the user based on the provided user_name
+        const user = await UserModel.findOne({ user_name: req.params.user_name });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Fetch all posts for the found user
+        const allPosts = await UserPostModel.find({ _id: user.liked_posts })
+            .limit(perPage)
+            .skip(page * perPage)
+            .sort({ [sort]: reverse })
+            .populate({ path: "user" })
+            .exec();
+
+        res.json(allPosts);
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ err });
+    }
+});
+
 
 
 // search posts by title or description
@@ -226,6 +288,27 @@ router.put("/like/:id", auth, async (req, res) => {
 
 
 
+
+//add post to liked_posts array:
+
+router.put('/liked_posts_array/:id', auth, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const user = await UserModel.findById(req.tokenData._id);
+
+        if (!user.liked_posts.includes(postId)) {
+            await user.updateOne({ $push: { liked_posts: postId } });
+            res.json('Post has been saved');
+        } else {
+            await user.updateOne({ $pull: { liked_posts: postId } });
+            res.json('Post has been unsaved');
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ error: err.message });
+    }
+});
+
 // Saves a post
 // PUT /userPosts/save/:id
 router.put('/save/:id', auth, async (req, res) => {
@@ -245,7 +328,6 @@ router.put('/save/:id', auth, async (req, res) => {
         res.status(502).json({ error: err.message });
     }
 });
-
 
 // Update a post
 // Domain/userPosts/(id of the post)
