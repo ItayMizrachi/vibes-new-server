@@ -12,13 +12,17 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: "5 mb" }));
 app.use(express.static(path.join(__dirname, "public")));
+// app.use('/images', express.static(path.join(__dirname, './dalle')));
+
+
+
 
 const server = http.createServer(app);
 
 // Now that io is initialized, you can pass it to routesInit
 routesInit(app);
 
-let port = process.env.PORT || 3009;
+let port = process.env.PORT || 3008;
 server.listen(port);
 console.log("server listening on port " + port);
 createSocket(server);
