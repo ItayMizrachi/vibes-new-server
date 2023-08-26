@@ -8,7 +8,7 @@ router.post("/completions", async (req, res) => {
     const options = {
         method: "POST",  
         headers: {
-            "Authorization": `Bearer ${process.env.OPENAI_KEY}`, 
+            "Authorization": `Bearer ${process.env.OPENAI_KEYSASHA}`, 
             "Content-Type": "application/json"  // Informing the server that we're sending JSON data
         },
         body: JSON.stringify({  // Convert JavaScript object to a JSON string
