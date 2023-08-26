@@ -9,13 +9,11 @@ const { createSocket } = require("./sockets/appSocket");
 require("./db/mongoConnect");
 
 const app = express();
+
 app.use(cors());
 app.use(express.json({ limit: "5 mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 // app.use('/images', express.static(path.join(__dirname, './dalle')));
-
-
-
 
 const server = http.createServer(app);
 

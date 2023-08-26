@@ -103,8 +103,6 @@ router.get("/userInfo/:user_name", async (req, res) => {
 router.get("/savedposts/:user_name", async (req, res) => {
     const perPage = 10;
     const page = req.query.page - 1 || 0;
-    const sort = req.query.sort || "date_created";
-    const reverse = req.query.reverse === 1;
 
     try {
         // Find the user based on the provided user_name
@@ -114,13 +112,18 @@ router.get("/savedposts/:user_name", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Fetch all posts for the found user
-        const allPosts = await UserPostModel.find({ _id: user.saved_posts })
+        // Fetch all posts for the found user in any order (not sorted yet)
+        let allPosts = await UserPostModel.find({ _id: { $in: user.saved_posts } })
             .limit(perPage)
             .skip(page * perPage)
-            .sort({ [sort]: reverse })
             .populate({ path: "user" })
             .exec();
+
+        // Reorder the results based on the reverse order of saved_posts array
+        allPosts = user.saved_posts
+            .filter(postId => allPosts.some(post => post._id.equals(postId)))
+            .map(postId => allPosts.find(post => post._id.equals(postId)))
+            .reverse();  // <-- Added this to reverse the order
 
         res.json(allPosts);
     } catch (err) {
@@ -129,13 +132,9 @@ router.get("/savedposts/:user_name", async (req, res) => {
     }
 });
 
-
-//get posts from the liked_posts array
 router.get("/likedposts/:user_name", async (req, res) => {
     const perPage = 10;
     const page = req.query.page - 1 || 0;
-    const sort = req.query.sort || "date_created";
-    const reverse = req.query.reverse === 1;
 
     try {
         // Find the user based on the provided user_name
@@ -145,13 +144,18 @@ router.get("/likedposts/:user_name", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Fetch all posts for the found user
-        const allPosts = await UserPostModel.find({ _id: user.liked_posts })
+        // Fetch all posts for the found user in any order (not sorted yet)
+        let allPosts = await UserPostModel.find({ _id: { $in: user.liked_posts } })
             .limit(perPage)
             .skip(page * perPage)
-            .sort({ [sort]: reverse })
             .populate({ path: "user" })
             .exec();
+
+        // Reorder the results based on the reverse order of liked_posts array
+        allPosts = user.liked_posts
+            .filter(postId => allPosts.some(post => post._id.equals(postId)))
+            .map(postId => allPosts.find(post => post._id.equals(postId)))
+            .reverse();  // Reversing the order
 
         res.json(allPosts);
     } catch (err) {
@@ -159,7 +163,6 @@ router.get("/likedposts/:user_name", async (req, res) => {
         res.status(502).json({ err });
     }
 });
-
 
 
 // search posts by title or description
