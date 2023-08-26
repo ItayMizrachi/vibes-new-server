@@ -39,7 +39,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-router.post("/", async (req, res) => {
+router.post("/",auth, async (req, res) => {
     try {
         const response = await openai.createImage({
             prompt: req.body.prompt,
