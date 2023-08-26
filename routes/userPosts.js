@@ -61,7 +61,7 @@ router.get("/postsList", authAdmin, async (req, res) => {
             .sort({ [sort]: reverse })
             .populate({ path: "user", select: ["user_name", "name"] })
             .exec();
-            ;
+        ;
 
         res.json(allPosts);
     } catch (err) {
@@ -98,6 +98,37 @@ router.get("/userInfo/:user_name", async (req, res) => {
         res.status(502).json({ err });
     }
 });
+
+
+router.get("/savedposts/:user_name", async (req, res) => {
+    const perPage = 10;
+    const page = req.query.page - 1 || 0;
+    const sort = req.query.sort || "date_created";
+    const reverse = req.query.reverse === "yes" ? 1 : -1;
+
+    try {
+        // Find the user based on the provided user_name
+        const user = await UserModel.findOne({ user_name: req.params.user_name });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Fetch all posts for the found user
+        const allPosts = await UserPostModel.find({ _id: user.saved_posts })
+            .limit(perPage)
+            .skip(page * perPage)
+            .sort({ [sort]: reverse })
+            .populate({ path: "user" })
+            .exec();
+
+        res.json(allPosts);
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ err });
+    }
+});
+
 
 
 // search posts by title or description

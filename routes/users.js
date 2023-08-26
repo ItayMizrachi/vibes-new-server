@@ -7,7 +7,7 @@ const { UserPostModel } = require("../models/userPostModel");
 const router = express.Router();
 
 const mongoose = require('mongoose');
-const {ObjectId} = mongoose.Types;
+const { ObjectId } = mongoose.Types;
 
 router.get("/", async (req, res) => {
   res.json({ msg: "Users work" });
@@ -443,6 +443,8 @@ router.put("/follow/:id", auth, async (req, res) => {
 //     res.status(403).json("you cant unfollow yourself")
 //   }
 // })
+//************************************************************* */
+
 
 router.put("/savePost/:id", auth, async (req, res) => {
   try {

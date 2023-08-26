@@ -31,16 +31,21 @@ const userSchema = new mongoose.Schema({
         ref: "users", // Referring to the same User model
     }],
 
+
+
     followings: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "users", // Referring to the same User model
     }],
-    saved_posts: {
-        type: Array, default: [],
-    },
-    posts_posted: {
-        type: Array, default: [],
-    },
+
+
+    saved_posts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+    }],
+
+
+
     relationship: {
         type: Number, enum: [1, 2, 3],
     },
