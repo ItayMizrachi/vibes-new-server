@@ -233,6 +233,7 @@ router.get("/count", async (req, res) => {
     try {
         let perPage = req.query.perPage || 5;
         const count = await UserPostModel.countDocuments({});
+        console.log(count)
         res.json({ count, pages: Math.ceil(count / perPage) });
     }
     catch (err) {
