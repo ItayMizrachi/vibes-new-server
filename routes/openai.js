@@ -1,14 +1,15 @@
 const express = require("express");  
 const router = express.Router();     
-const dotenv = require("dotenv");    
+const dotenv = require("dotenv"); 
+const { auth } = require("../auth/auth");   
 dotenv.config();
 
 
-router.post("/completions", async (req, res) => {
+router.post("/completions",auth, async (req, res) => {
     const options = {
         method: "POST",  
         headers: {
-            "Authorization": `Bearer ${process.env.OPENAI_KEYSASHA}`, 
+            "Authorization": `Bearer ${process.env.OPENAI_KEY}`, 
             "Content-Type": "application/json"  // Informing the server that we're sending JSON data
         },
         body: JSON.stringify({  // Convert JavaScript object to a JSON string
