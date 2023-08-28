@@ -25,24 +25,6 @@ router.get("/:userId", auth, async (req, res) => {
   }
 });
 
-// router.get("/:userId", auth, async (req, res) => {
-//   try {
-//     const userId = req.params.userId;
-
-//     // Query the database for chats with the user as a participant and sort by last_updated
-//     const userChats = await Chat.find({ participants: userId })
-//       .populate("participants", "user_name profilePic")
-//       .sort({ last_updated: -1 }) // Sort in descending order (latest first)
-//       .exec();
-
-//     res.status(200).json(userChats);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-
 // Get messages for a specific chat
 router.get("/:chatId/messages", auth, async (req, res) => {
   try {
@@ -57,27 +39,6 @@ router.get("/:chatId/messages", auth, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-// Get messages for a specific chat
-// router.get("/:chatId/messages", auth, async (req, res) => {
-//   try {
-//       const chatId = req.params.chatId;
-
-//       // Update all messages in the chat to set isRead to true
-//       await Message.updateMany({ chat: chatId }, { $set: { isRead: true } });
-
-//       // Retrieve the updated messages
-//       const messages = await Message.find({ chat: chatId })
-//           .populate("sender", "user_name profilePic")
-//           .exec();
-
-//       res.json(messages);
-//   } catch (err) {
-//       console.error(err);
-//       res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
 
 //creates a new chat
 router.post("/", auth, async (req, res) => {
