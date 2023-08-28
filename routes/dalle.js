@@ -39,12 +39,13 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-router.post("/",auth, async (req, res) => {
+router.post("/", auth, async (req, res) => {
     try {
         const response = await openai.createImage({
             prompt: req.body.prompt,
             n: 1,
             size: "1024x1024",
+            response_format: 'b64_json'  // Fixed this line
         });
         
         // Set appropriate CORS headers
