@@ -10,7 +10,10 @@ require("./db/mongoConnect");
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+    origin: 'https://vibe-on-vibes.onrender.com/'
+  }));
 app.use(express.json({ limit: "5 mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 // app.use('/images', express.static(path.join(__dirname, './dalle')));
