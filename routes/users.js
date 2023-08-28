@@ -231,6 +231,24 @@ router.get("/count", async (req, res) => {
   }
 })
 
+router.get("/search", auth, async (req, res) => {
+  let s = req.query.s;
+  let searchExp = new RegExp(s, "i");
+  try {
+    let data = await UserModel
+      .find({ user_name: searchExp })
+      .limit(10)
+    res.json(data);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(502).json({ err })
+  }
+})
+
+
+
+
 
 
 // Create a new user

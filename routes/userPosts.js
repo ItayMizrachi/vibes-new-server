@@ -165,19 +165,17 @@ router.get("/likedposts/:user_name", async (req, res) => {
 });
 
 
-// search posts by title or description
+// search posts by  description
 // Domain/userPosts/search/?s=tel aviv
 router.get("/search", auth, async (req, res) => {
     let s = req.query.s;
     let searchExp = new RegExp(s, "i");
     try {
-        let data = await UserPostModel.find({
-            $or: [
-                { user_id: req.tokenData._id },
-                { user_id: { $in: req.tokenData.followings } },
-            ],
-            description: searchExp
-        }).limit(10)
+        let data = await UserPostModel
+            .find({ description: searchExp })
+            .limit(10)
+            .populate({ path: "user", select: ["user_name", "name"] })
+            .exec();
         res.json(data);
     }
     catch (err) {
