@@ -1,15 +1,15 @@
-const express = require("express");  
-const router = express.Router();     
-const dotenv = require("dotenv"); 
-const { auth } = require("../auth/auth");   
+const express = require("express");
+const router = express.Router();
+const dotenv = require("dotenv");
+const { auth } = require("../auth/auth");
 dotenv.config();
 
 
 router.post("/completions", async (req, res) => {
     const options = {
-        method: "POST",  
+        method: "POST",
         headers: {
-            "Authorization": `Bearer ${process.env.OPENAI_KEY}`, 
+            "Authorization": `Bearer ${process.env.OPENAI_KEY}`,
             "Content-Type": "application/json"  // Informing the server that we're sending JSON data
         },
         body: JSON.stringify({  // Convert JavaScript object to a JSON string
@@ -22,16 +22,10 @@ router.post("/completions", async (req, res) => {
     try {
         // Making the actual request to the OpenAI API with the given options
         const response = await fetch(`https://api.openai.com/v1/chat/completions`, options);
-        
+
         // Parsing the JSON response from the API
         const data = await response.json();
 
-                
-        // Set appropriate CORS headers
-        res.header('Access-Control-Allow-Origin', 'https://vibe-on-vibes.onrender.com/'); // Allow requests from any origin
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        
         // Sending the received data back to the client
         res.send(data);
     } catch (error) {
