@@ -5,7 +5,7 @@ const { auth } = require("../auth/auth");
 dotenv.config();
 
 
-router.post("/completions", async (req, res) => {
+router.post("/completions",auth, async (req, res) => {
     const options = {
         method: "POST",
         headers: {
@@ -22,7 +22,10 @@ router.post("/completions", async (req, res) => {
     try {
         // Making the actual request to the OpenAI API with the given options
         const response = await fetch(`https://api.openai.com/v1/chat/completions`, options);
-
+        // Set appropriate CORS headers
+        res.header('Access-Control-Allow-Origin', '*'); // Allow requests from any origin
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         // Parsing the JSON response from the API
         const data = await response.json();
 
