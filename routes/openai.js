@@ -26,6 +26,12 @@ router.post("/completions", async (req, res) => {
         // Parsing the JSON response from the API
         const data = await response.json();
 
+                
+        // Set appropriate CORS headers
+        res.header('Access-Control-Allow-Origin', '*'); // Allow requests from any origin
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        
         // Sending the received data back to the client
         res.send(data);
     } catch (error) {
