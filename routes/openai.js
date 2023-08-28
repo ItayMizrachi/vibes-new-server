@@ -5,7 +5,7 @@ const { auth } = require("../auth/auth");
 dotenv.config();
 
 
-router.post("/completions",auth, async (req, res) => {
+router.post("/completions", async (req, res) => {
     const options = {
         method: "POST",  
         headers: {
